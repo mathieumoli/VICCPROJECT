@@ -11,12 +11,13 @@ import java.util.Map;
 /**
  * Created by fhermeni2 on 16/11/2015.
  */
-public class AntiAffinityVmAllocationPolicy extends VmAllocationPolicy {
+public class DisasterRecoveryVmAllocationPolicy extends VmAllocationPolicy {
 
     /** The map to track the server that host each running VM. */
     private Map<Vm,Host> hoster;
+    private boolean previousWasInG4 = false;
 
-    public AntiAffinityVmAllocationPolicy(List<? extends Host> list) {
+    public DisasterRecoveryVmAllocationPolicy(List<? extends Host> list) {
         super(list);
         hoster =new HashMap<>();
     }
@@ -33,16 +34,13 @@ public class AntiAffinityVmAllocationPolicy extends VmAllocationPolicy {
     }
 
     @Override
-    public boolean allocateHostForVm(Vm vm) {        
+    public boolean allocateHostForVm(Vm vm) {
         for (Host host : this.getHostList()) {
-            List<Vm> VmSelect = host.getVmList();
-            boolean goodR=true;
-            for(Vm vmSelected: VmSelect) {
-                if (vmSelected.getId() / 100 == vm.getId() / 100) {
-                    goodR=false;
-                }
-            }
-            if (goodR && allocateHostForVm(vm, host)) {
+            int mips = host.getTotalMips();
+            //System.out.println("mips: "+mips);
+            if ((previousWasInG4 ^ mips == 3720)
+                    && allocateHostForVm(vm, host)) {
+                previousWasInG4 = !previousWasInG4;
                 return true;
             }
         }
@@ -60,14 +58,14 @@ public class AntiAffinityVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public void deallocateHostForVm(Vm vm) {
-        Host host = hoster.get(vm);
+        Host host = getHost(vm);
         host.vmDestroy(vm);
         hoster.remove(vm);
     }
 
     @Override
     public Host getHost(Vm vm) {
-        return getHost(vm);
+        return hoster.get(vm);
     }
 
     @Override

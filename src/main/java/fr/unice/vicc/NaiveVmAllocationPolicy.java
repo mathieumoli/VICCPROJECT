@@ -3,7 +3,6 @@ package fr.unice.vicc;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
-import org.cloudbus.cloudsim.power.PowerHost;
 
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +53,7 @@ public class NaiveVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public void deallocateHostForVm(Vm vm) {
-        Host host = hoster.get(vm);
+        Host host = getHost(vm);
         host.vmDestroy(vm);
         hoster.remove(vm);
     }
