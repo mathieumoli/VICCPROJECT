@@ -35,25 +35,42 @@ public class NaiveVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public boolean allocateHostForVm(Vm vm) {        
+        for (Host host : this.getHostList()) {
+            if (allocateHostForVm(vm, host)) {
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public boolean allocateHostForVm(Vm vm, Host host) {
+        if (host.vmCreate(vm)) {
+            hoster.put(vm, host);
+            return true;
+        }
         return false;
     }
 
     @Override
     public void deallocateHostForVm(Vm vm) {
+        Host host = hoster.get(vm);
+        host.vmDestroy(vm);
+        hoster.remove(vm);
     }
 
     @Override
     public Host getHost(Vm vm) {
-        return null;
+        return hoster.get(vm);
     }
 
     @Override
     public Host getHost(int vmId, int userId) {
+        for (Vm vm: hoster.keySet()) {
+            if (vm.getId() == vmId && vm.getUserId() == userId) {
+                return hoster.get(vm);
+            }
+        }
         return null;
     }
 }
