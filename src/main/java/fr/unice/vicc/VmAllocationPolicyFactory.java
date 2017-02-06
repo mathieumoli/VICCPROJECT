@@ -22,6 +22,7 @@ public class VmAllocationPolicyFactory {
             case "naive":  return new NaiveVmAllocationPolicy(hosts);
             case "antiAffinity": return new AntiAffinityVmAllocationPolicy(hosts);
             case "dr": return new DisasterRecoveryVmAllocationPolicy(hosts);
+            case "ft": return new FaultToleranceVmAllocationPolicy2(hosts);
 
         }
         throw new IllegalArgumentException("No such policy '" + id + "'");

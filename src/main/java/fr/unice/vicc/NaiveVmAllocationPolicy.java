@@ -44,10 +44,12 @@ public class NaiveVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public boolean allocateHostForVm(Vm vm, Host host) {
-        if (host.vmCreate(vm)) {
-            hoster.put(vm, host);
-            return true;
-        }
+
+            if (host.vmCreate(vm)) {
+                hoster.put(vm, host);
+                return true;
+            }
+
         return false;
     }
 

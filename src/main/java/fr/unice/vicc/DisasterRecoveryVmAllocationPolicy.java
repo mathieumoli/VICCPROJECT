@@ -38,17 +38,20 @@ public class DisasterRecoveryVmAllocationPolicy extends VmAllocationPolicy {
         for (Host host : this.getHostList()) {
             int mips = host.getTotalMips();
             //System.out.println("mips: "+mips);
-            if ((previousWasInG4 ^ mips == 3720)
-                    && allocateHostForVm(vm, host)) {
-                previousWasInG4 = !previousWasInG4;
-                return true;
-            }
+
+                if ((previousWasInG4 ^ mips == 3720)
+                        && allocateHostForVm(vm, host)) {
+                    previousWasInG4 = !previousWasInG4;
+                    return true;
+                }
+
         }
         return false;
     }
 
     @Override
     public boolean allocateHostForVm(Vm vm, Host host) {
+
         if (host.vmCreate(vm)) {
             hoster.put(vm, host);
             return true;
