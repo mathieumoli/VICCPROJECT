@@ -15,20 +15,16 @@ public class FaultToleranceVmAllocationPolicy2 extends VmAllocationPolicy {
 
     private Map<Vm, Host> hoster;
     private Map<Integer, Host> used;
-    private Map<Integer, Integer> cpuAvailable;
-    private Map<Integer, Integer> ramAvailable;
-    private Map<Integer, Long> storageAvailable;
-    private Map<Vm, Host> reserved;
+    private Map<Integer, Double> usedCPU;
+    private Map<Integer, Integer> usedRAM;
 
 
     public FaultToleranceVmAllocationPolicy2(List<? extends Host> list) {
         super(list);
         this.hoster = new HashMap<Vm, Host>();
         used = new HashMap<Integer, Host>();
-        cpuAvailable = new HashMap<Integer, Integer>();
-        ramAvailable = new HashMap<Integer, Integer>();
-        storageAvailable = new HashMap<Integer, Long>();
-        reserved = new HashMap<Vm, Host>();
+        usedCPU = new HashMap<Integer, Double>();
+        usedRAM = new HashMap<Integer, Integer>();
     }
 
     @Override
@@ -37,141 +33,42 @@ public class FaultToleranceVmAllocationPolicy2 extends VmAllocationPolicy {
         this.hoster = new HashMap<Vm, Host>();
     }
 
-    private boolean updateUsed(Integer id, double cpu, int ram, long storage) {
-        //si l'host a deja des VMs allouées ou reservées
-
-        if (used.containsKey(id)) {
-            System.out.println("on l'a trouvé dans la map");
-            System.out.println("cpu dispo:"+cpuAvailable.get(id));
-            System.out.println("cpu demande"+cpu);
-
-            System.out.println("ram dispo:"+ramAvailable.get(id));
-            System.out.println("ram demande"+ram);
-
-            System.out.println("storage dispo:"+storageAvailable.get(id));
-            System.out.println("storage demande"+storage);
-
-            if (cpuAvailable.get(id) >= cpu && ramAvailable.get(id) >= ram && storageAvailable.get(id) >= storage) {
-                cpuAvailable.put(id, cpuAvailable.get(id) - (int) cpu);
-                ramAvailable.put(id, ramAvailable.get(id) - ram);
-                storageAvailable.put(id, storageAvailable.get(id) - storage);
-                System.out.println("update realisé");
-                return true;
-            }
-
-        }
-        System.out.println("on a pas reussi");
-
-        return false;
-    }
-
-    private boolean testUsed(Host h, double cpu, int ram, long storage) {
-        //si l'host a deja des VMs allouées ou reservées
-        if (h.getTotalMips() >= cpu && h.getRam() >= ram && h.getStorage() >= storage) {
-            System.out.println("assez d'espace");
-            return true;
-        }
-        System.out.println("need plus ");
-        return false;
-    }
-
-    private boolean affectUsed(Host h, Vm vm) {
-        used.put(h.getId(), h);
-        cpuAvailable.put(h.getId(), h.getTotalMips());
-        ramAvailable.put(h.getId(), h.getRam());
-        storageAvailable.put(h.getId(), h.getStorage());
-        return updateUsed(h.getId(), vm.getMips(), vm.getRam(), vm.getSize());
-
-    }
 
     @Override
     public boolean allocateHostForVm(Vm vm) {
-        for (Host h : getHostList()) {
-            if (testUsed(h, vm.getMips(), vm.getRam(), vm.getSize())) {
-                if (allocateHostForVm(vm, h)) {
-                    return true;
-                }
-            }
+        System.out.println(vm.getId());
+        Host h = getaHostForVM(vm);
+        int id = vm.getId();
+        if (h != null ) {
+            if(allocateHostForVm(vm,h)) {
+                affectUsed(h, vm);
 
-
-        }return false;
-
-    }
-
-    private boolean bookSpace(Vm vm, Host h){
-        for (Host host : getHostList()) {
-            //on veut pas reserver dans l'host d'affectation
-            if(host.getId()!=h.getId()){
-                //on test si dans l'host il y a la place
-                if (testUsed(host, vm.getMips(), vm.getRam(), vm.getSize())) {
-                    System.out.println("je passe dans le bookspace");
-                    //on regarde s'il y a deja des reservations dessus
-                    if(used.containsKey(host.getId())){
-                        System.out.println("la cle est contenu");
-
-                        //si c'est le cas on fait juste un update
-                        if(updateUsed(host.getId(), vm.getMips(), vm.getRam(), vm.getSize())){
-                            reserved.put(vm,host);
-                            System.out.println("je sors du bookSpace");
-                            return true;
-                        }
-                    }else{
-                        //sinon on l'ajoute et on update
-                        if( affectUsed(host,vm)){
-                            reserved.put(vm,host);
-                            return true;
-                        }
-
+                //si multiple de 10 on reserve la place
+                if ((id % 10) == 0) {
+                    Host secondHost = getaSecondHostForVM(vm, h);
+                    //si on trouve pas de second host on detruit
+                    if (secondHost == null) {
+                        deallocateHostForVm(vm);
+                        unlockHostRessources(h, vm);
+                        return false;
                     }
+                        affectUsed(secondHost, vm);
+
                 }
-            }
-        }
-        return false;
-    }
-
-    private boolean allocSpace(Vm vm, Host h){
-
-        //on regarde s'il y a deja des reservations dessus
-        if(used.containsKey(h.getId())){
-            //si c'est le cas on fait juste un update
-            if(updateUsed(h.getId(), vm.getMips(), vm.getRam(), vm.getSize())){
-                System.out.println("je sors du allocSpace");
-
                 return true;
             }
-        }else{
-            //sinon on l'ajoute et on update
-            System.out.println("je sors du allocSpace par le else");
-            return affectUsed(h,vm);
         }
-
         return false;
     }
+
+
 
     @Override
     public boolean allocateHostForVm(Vm vm, Host host) {
-        if(vm.getId()%10==0){
-            //on commence par reserver pour le back up
-            if(bookSpace(vm,host)){
-                //on alloue si on a book
-                if(allocSpace(vm,host)){
-
-                        if (host.vmCreate(vm)) {
-                            hoster.put(vm, host);
-                            return true;
-                        }
-
-                }
-
-            }
-            return false;
+        if (host.vmCreate(vm)) {
+            hoster.put(vm, host);
+            return true;
         }
-        //si on a juste a allouer
-            allocSpace(vm,host);
-            if (host.vmCreate(vm)) {
-                hoster.put(vm, host);
-                return true;
-            }
 
         return false;
 
@@ -185,11 +82,6 @@ public class FaultToleranceVmAllocationPolicy2 extends VmAllocationPolicy {
     @Override
     public void deallocateHostForVm(Vm vm) {
         Host host = getHost(vm);
-        if(reserved.containsKey(vm)) {
-            Host hostDeReserve = reserved.get(vm);
-            updateUsed(hostDeReserve.getId(), -vm.getMips(), -vm.getRam(), -vm.getSize());
-            reserved.remove(vm);
-        }
         host.vmDestroy(vm);
         hoster.remove(vm);
     }
@@ -210,5 +102,91 @@ public class FaultToleranceVmAllocationPolicy2 extends VmAllocationPolicy {
         }
         return null;
     }
+
+    private Host getaHostForVM(Vm vm) {
+        double mipsForVM = vm.getMips();
+        int ramForVM = vm.getRam();
+        int ram = 0;
+        double mips=0;
+        for(Host h : getHostList()) {
+            //si deja utilisé
+            if(used.get(h.getId())!=null) {
+                ram = usedRAM.get(h.getId());
+                mips = usedCPU.get(h.getId());
+            }
+            double hMips=h.getTotalMips();
+            int hRam=h.getRam();
+            if(((hMips - mips) >= mipsForVM && ((hRam - ram) >= ramForVM))) {
+                return h;
+            }
+        }
+
+        return null;
+    }
+
+    private Host getaSecondHostForVM(Vm vm,Host h){
+        double mipsForVM = vm.getMips();
+        int ramForVM = vm.getRam();
+        int ram =0;
+        double mips=0;
+        for(Host candidateHost : getHostList()) {
+            // si on reserve sur un host il faut qu'il soit different du premier
+            if(candidateHost.getId()!=h.getId()) {
+                //si deja utilisé
+                if (used.get(h.getId()) != null) {
+                    ram = usedRAM.get(h.getId());
+                    mips = usedCPU.get(h.getId());
+                }
+                double hMips=h.getTotalMips();
+                int hRam=h.getRam();
+                if (((hMips - mips) > mipsForVM
+                        && ((hRam - ram) > ramForVM))) {
+                    return h;
+                }
+            }
+        }
+
+        return null;
+
+    }
+
+    private void affectUsed(Host h, Vm vm) {
+        //si deja present
+        if(used.containsKey(h.getId())) {
+            //on met a jour seulement
+            addUsed(h.getId(),vm.getMips(),vm.getRam());
+        }else {
+            //on cree l'utilisation
+            used.put(h.getId(), h);
+            usedCPU.put(h.getId(), vm.getMips());
+            usedRAM.put(h.getId(), vm.getRam());
+        }
+
+    }
+    private void addUsed(Integer id, double cpu, int ram) {
+        //si l'host a deja des VMs allouées ou reservées
+
+        usedCPU.put(id,usedCPU.get(id)+cpu);
+        usedRAM.put(id,usedRAM.get(id)+ram);
+
+    }
+
+    private void removeUsed(Integer id, double cpu, int ram) {
+        //si l'host a deja des VMs allouées ou reservées
+
+        usedCPU.put(id,usedCPU.get(id)-cpu);
+        usedRAM.put(id,usedRAM.get(id)-ram);
+
+    }
+
+    private void unlockHostRessources(Host h, Vm vm) {
+        if(used.containsKey(h.getId())) {
+            removeUsed(h.getId(), vm.getMips(), vm.getRam());
+            //si pleine capacité on supprime des utilisés
+            if(usedCPU.get(h.getId())==0 && usedRAM.get(h.getId())==0){
+                used.remove(h.getId());
+        }
+       }
+}
 
 }
