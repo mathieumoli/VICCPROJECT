@@ -50,7 +50,6 @@ public class NoViolationsVmAllocationPolicy extends VmAllocationPolicy {
             hoster.put(vm, host);
             return true;
         }
-
         return false;
     }
 

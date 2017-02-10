@@ -22,7 +22,7 @@ public class VmAllocationPolicyFactory {
             case "naive":  return new NaiveVmAllocationPolicy(hosts);
             case "antiAffinity": return new AntiAffinityVmAllocationPolicy(hosts);
             case "dr": return new DisasterRecoveryVmAllocationPolicy(hosts);
-            case "ft": return new FaultToleranceVmAllocationPolicy2(hosts);
+            case "ft": return new FaultToleranceVmAllocationPolicy(hosts);
             case "nextFit": return new NextFitVmAllocationPolicy(hosts);
             case "worstFit": return new WorstFitVmAllocationPolicy(hosts);
             case "noViolations": return new NoViolationsVmAllocationPolicy(hosts);
