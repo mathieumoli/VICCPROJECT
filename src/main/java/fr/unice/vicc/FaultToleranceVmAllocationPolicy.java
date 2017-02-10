@@ -101,9 +101,9 @@ public class FaultToleranceVmAllocationPolicy extends VmAllocationPolicy {
     }
 
     /**
-     * Search a host for the VM
-     * @param vm the vm to find a host for
-     * @param host the host to which VM has been allocated, null means it's the first research
+     * Cherche un host pour une VM
+     * @param vm la VM pour laquelle on cherche un host
+     * @param host l'host auquel la VM a été allouée, vaut null si c'est la première recherche
      * @return
      */
     private Host getaHostForVM(Vm vm, Host host) {
@@ -112,7 +112,7 @@ public class FaultToleranceVmAllocationPolicy extends VmAllocationPolicy {
         int ram = 0;
         double mips=0;
         for(Host h : getHostList()) {
-            // If host is null, first research, else check that h is not the host to which we allocated already
+            // Si host vaut null alors première recherche, sinon vérifier que l'id du host alloué est différent du courant
             if (host == null || host.getId() != h.getId()) {
                 //si deja utilisé
                 if (used.get(h.getId()) != null) {
@@ -143,6 +143,7 @@ public class FaultToleranceVmAllocationPolicy extends VmAllocationPolicy {
         }
 
     }
+
     private void addUsed(Integer id, double cpu, int ram) {
         //si l'host a deja des VMs allouées ou reservées
         usedCPU.put(id,usedCPU.get(id)+cpu);

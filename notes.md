@@ -9,13 +9,16 @@
 ## Comments
 
 ### Anti Affinity algorithm
-
 For this  algorithm, the impact on the cluster hosting capacity is that more hosts are going to be used. 
 The reason is that the available capacity of a host is no more the only criteria in order to allocate a VM.
 Because of this, some hosts would have the capacity for one more VM, but the affinity criteria is preventing
 that, and another host has to be used.
 
 ### Fault-tolerance for standalone VMs
+The infrastructure load in that particular context is different from others because we have "real" allocations,
+and "previewed" ones since we prepare a new allocation for VM's which id is multiple of 10. In that context,
+the load of the infrastructure is higher because we consider the resources these "previewed" allocations are
+going to use.
 
 
 ### Load Balancing
