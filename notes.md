@@ -30,3 +30,22 @@ the last host which allocated a vm.
 ### Performance Satisfaction
 This algorithm is effective because we can see by executing it that there are no reported penalties, which
 means that we didn't try to allocate a VM to a host with not enough capacity for it.
+
+### Energy-efficient schedulers
+This algorithm has to be the less consumer in energy. Here the result for each previous algorithm:
+
+Energy-efficient: 2604,30€
+
+Fault Tolerance: 2911,59€
+
+Naive: 2645,63€
+
+AntiAffinity: 2688,44€
+
+DisasterRecovery: 2649,07€
+
+nextFit: 2715,76€
+
+worstFit: 2791,80€
+
+noViolation: 2868,74€
