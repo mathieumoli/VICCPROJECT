@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Nicolas HORY
+ * @author Mathieu MOLINENGO
  * @version 10/02/17.
  *
  */
@@ -51,27 +51,11 @@ public class EnergyEfficientVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public boolean allocateHostForVm(Vm vm) {
-        //nous l'avons choisir la node la moins utilisées
-        double selectedPercentUsed=1;
 
         for(Host h: this.getHostList()){
             // on verifie si le host peut accueillir notre vm
             if(allocateHostForVm(vm,h)){
                 return true;
-                /*   //calcul le pourcentage de MIPS utilisés  et affectation sur le plus faible
-                double mipsavailable =h.getAvailableMips();
-                double mipstotal = h.getTotalMips();
-                double percentMipsUsed=1-(mipsavailable/mipstotal);
-
-                double ramavailable= h.getRamProvisioner().getAvailableRam();
-                double ramtotal=h.getRam();
-                double percentRamUsed=1-(ramavailable/ramtotal);
-
-                double percentUsed = percentMipsUsed+percentRamUsed/2;
-                if(selectedPercentUsed>percentUsed) {
-                    selectedHost = h;
-                    selectedPercentUsed = percentUsed;
-                }*/
 
             }
 
