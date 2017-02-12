@@ -19,12 +19,28 @@ public class GreedyVmAllocationPolicy extends VmAllocationPolicy {
     public GreedyVmAllocationPolicy(List<? extends Host> list) {
         super(list);
         hoster =new HashMap<>();
+        sortByMips();
     }
 
     @Override
     protected void setHostList(List<? extends Host> hostList) {
         super.setHostList(hostList);
         hoster = new HashMap<>();
+        sortByMips();
+    }
+
+    private void sortByMips(){
+
+        for(int i=0;i<getHostList().size();i++){
+            for(int j=i+1;j<getHostList().size();j++){
+                if(getHostList().get(i).getTotalMips()<getHostList().get(j).getTotalMips()){
+                    Host save= getHostList().get(j);
+                    getHostList().set(j,getHostList().get(i));
+                    getHostList().set(i,save);
+                }
+            }
+
+        }
     }
 
     @Override
@@ -34,7 +50,13 @@ public class GreedyVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public boolean allocateHostForVm(Vm vm) {
-        // TODO
+        for (Host host : this.getHostList()) {
+
+                if (allocateHostForVm(vm, host)) {
+                    return true;
+                }
+
+        }
         return false;
     }
 

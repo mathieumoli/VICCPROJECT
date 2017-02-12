@@ -49,3 +49,11 @@ nextFit: 2715,76€
 worstFit: 2791,80€
 
 noViolation: 2868,74€
+
+## Greedy scheduler
+
+For this one we needed a scheduler which doesn't consume not to much energy and, in the same time, not violating too much the SLAs.
+To do it we simply order the node in descreasing order and try to put the VM in the list from the bigger node to the
+smaller one. This algorithm is not very complex (more or less the complexity is n² ). It is not the most energy saver 
+(our energy one consumes 2604€ of electricity, the no violation one uses 2868 € & this one 2686€) but its penalties are not enormous too (31,57€ for the greedy and 
+1413€ for the energy one) that's why it is a way to maximize revenue (9680€ for the greedy one, the noViolations one has 9529€ for the revenues and the energy one permits to earn 8380€).
