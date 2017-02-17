@@ -11,6 +11,9 @@ import java.util.Map;
 /**
  * @author Nicolas HORY
  * @version 10/02/17.
+ * This scheduler's objective is to reduce SLA violations. To manage that, we use the isSuitable method on each host
+ * before allocating. By doing this, we don't make allocations which are going to fail.
+ * Worst-case complexity: O(n) because we do at most n allocations
  */
 public class NoViolationsVmAllocationPolicy extends VmAllocationPolicy {
     /** The map to track the server that host each running VM. */

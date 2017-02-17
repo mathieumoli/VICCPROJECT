@@ -122,28 +122,60 @@ the last host which allocated a vm.
 ### Performance Satisfaction
 Code: NoViolationsVmAllocationPolicy.java  
 This algorithm is effective because we can see by executing it that there are no reported penalties, which
-means that we didn't try to allocate a VM to a host with not enough capacity for it.
+means that we didn't try to allocate a VM to a host with not enough capacity for it. To manage that, we used
+the method isSuitable on a host before allocating, which means that the allocation won't be tried if the host
+doesn't have enough free resources, and "solves" the problem of penalties.
+
+Results for a simulation on all days:
+* Incomes:    12398,59€
+* Penalties:  0,00€
+* Energy:     2868,74€
+* Revenue:    9529,85€
+
+We see that the revenue is higher than for other algorithms because of the penalties which is null.
 
 ### Energy-efficient schedulers
 Code: EnergyEfficientVmAllocationPolicy.java  
-This algorithm has to be the less consumer in energy. Here the result for each previous algorithm:
+This algorithm has to be the less consumer in energy. Here are the results for each previous algorithm:
 
-Energy-efficient: 2604,30€
-Fault Tolerance: 2911,59€
-Naive: 2645,63€
-AntiAffinity: 2688,44€
-DisasterRecovery: 2649,07€
-NextFit: 2715,76€
-WorstFit: 2791,80€
-NoViolation: 2868,74€
+* Fault Tolerance: 2911,59€  
+* Naive: 2645,63€  
+* AntiAffinity: 2688,44€  
+* DisasterRecovery: 2649,07€  
+* NextFit: 2715,76€  
+* WorstFit: 2791,80€  
+* NoViolation: 2868,74€  
+
+We chose to sort the hosts by mips values, in increasing order. By doing that, the allocations will start 
+in hosts with the less Mips, meaning that we are going to minimize the average resource used per host and so the energy fees.
+The result for this algorithm in a simulation on all days is: 
+* Incomes:    12398,59€
+* Penalties:  1413,50€
+* Energy:     2604,30€
+* Revenue:    8380,79€
+
+We see that the energy costs is lower than the ones we obtained for each other algorithm, showing the efficiency
+of our algorithm. However, the penalties are really important, probably because once a host is full we still
+try to allocate, and so on.
+
 
 ## Greedy scheduler
 Code: GreedyVmAllocationVmAllocationPolicy.java  
-For this one we needed a scheduler which doesn't consume too much energy and, in the same time, not violating too much the SLAs.
-To do it, we simply order the node in decreasing order and try to put the VM in the list from the bigger node to the
-smaller one. This algorithm is not very complex (more or less the complexity is n²). It is not the most energy saver 
-(our energy one consumes 2604€ of electricity, the no violation one uses 2868 € & this one 2686€) but its penalties are not enormous too (31,57€ for the greedy and 
-1413€ for the energy one) that's why it is a way to maximize revenue (9680€ for the greedy one, the noViolations one has 9529€ for the revenues and the energy one permits to earn 8380€).
+For this one we needed a scheduler which doesn't consume too much energy and, in the same time, not violating
+too much the SLAs. To do it, we simply order the nodes in decreasing order and try to put the VM in the list
+from the bigger node to the smaller one. This algorithm is not very complex (more or less the complexity is n²). 
+
+Results for a simulation on all days:
+* Incomes:    12398,59€
+* Penalties:  31,57€
+* Energy:     2686,64€
+* Revenue:    9680,38€
+
+We can see that it is not the most energy saver (our energy one consumes 2604€ of electricity, the no violation
+one uses 2868 € & this one 2686€) but its penalties are not enormous too (31,57€ for the greedy and 1413€ for
+the energy one) that's why it is a way to maximize revenue (9680€ for the greedy one, the noViolations one 
+has 9529€ for the revenues and the energy one permits to earn 8380€).
+
 
 
 ## Advice on the project
