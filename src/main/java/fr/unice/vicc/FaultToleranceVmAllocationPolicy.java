@@ -10,6 +10,10 @@ import java.util.Map;
 
 /**
  * Created by mathieumoli on 4/02/2015.
+ * This scheduler objective is to ensure the fault tolerance to 1 node failure for all the VM having an id
+ * that is a multiple of 10. This implementation allocates "normally", and then searches for another host
+ * which has enough resources for an eventual replicate.
+ * Worst-case complexity: O(n) since we do maximum two operations/host, which is linear.
  */
 public class FaultToleranceVmAllocationPolicy extends VmAllocationPolicy {
 
@@ -41,10 +45,10 @@ public class FaultToleranceVmAllocationPolicy extends VmAllocationPolicy {
         if (h != null ) {
             if(allocateHostForVm(vm,h)) {
                 affectUsed(h, vm);
-                //si multiple de 10 on reserve la place
+                //if multiple of 10 we reserve space
                 if ((id % 10) == 0) {
                     Host secondHost = getaHostForVM(vm, h);
-                    //si on trouve pas de second host on detruit
+                    //if we don't find a second host we destroy
                     if (secondHost == null) {
                         deallocateHostForVm(vm);
                         unlockHostRessources(h, vm);
@@ -112,9 +116,9 @@ public class FaultToleranceVmAllocationPolicy extends VmAllocationPolicy {
         int ram = 0;
         double mips=0;
         for(Host h : getHostList()) {
-            // Si host vaut null alors première recherche, sinon vérifier que l'id du host alloué est différent du courant
+            // If host is null then first search, else check the id is different of the allocated host's one
             if (host == null || host.getId() != h.getId()) {
-                //si deja utilisé
+                //if already used
                 if (used.get(h.getId()) != null) {
                     ram = usedRAM.get(h.getId());
                     mips = usedCPU.get(h.getId());
@@ -131,12 +135,12 @@ public class FaultToleranceVmAllocationPolicy extends VmAllocationPolicy {
     }
 
     private void affectUsed(Host h, Vm vm) {
-        //si deja present
+        //if already present
         if(used.containsKey(h.getId())) {
-            //on met a jour seulement
+            //just update
             addUsed(h.getId(),vm.getMips(),vm.getRam());
         }else {
-            //on cree l'utilisation
+            //create in the map
             used.put(h.getId(), h);
             usedCPU.put(h.getId(), vm.getMips());
             usedRAM.put(h.getId(), vm.getRam());
