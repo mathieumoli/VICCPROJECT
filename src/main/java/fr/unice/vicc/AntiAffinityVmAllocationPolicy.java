@@ -9,7 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by fhermeni2 on 16/11/2015.
+ * Created by nicolashory on 16/11/2015.
+ * This scheduler places the Vms with regards to their affinity. In practice, all Vms with an id between [0-99]
+ * must be on distinct nodes, the same with Vms having an id between [100-199], [200-299].
+ * Our algorithm used the HostList, checks the VM's on each host, and if there is no VM with an id in the same hundred
+ * as the VM to allocate, then try the allocation.
+ * Worst-case complexity: O(n). This case is the one in which the allocation fails until the last host.
  */
 public class AntiAffinityVmAllocationPolicy extends VmAllocationPolicy {
 
@@ -33,16 +38,17 @@ public class AntiAffinityVmAllocationPolicy extends VmAllocationPolicy {
     }
 
     @Override
-    public boolean allocateHostForVm(Vm vm) {        
+    public boolean allocateHostForVm(Vm vm) {
+        // Go through the host list
         for (Host host : this.getHostList()) {
-            List<Vm> VmSelect = host.getVmList();
-            boolean goodR=true;
-            for(Vm vmSelected: VmSelect) {
+            List<Vm> VmSelect = host.getVmList(); // Get the vm's of the host
+            boolean goodR=true; // Boolean indicating if there is a VM with an id in same hundred as the one to allocate
+            for(Vm vmSelected: VmSelect) { // Verification on the id
                 if (vmSelected.getId() / 100 == vm.getId() / 100) {
                     goodR=false;
                 }
             }
-            if (goodR && allocateHostForVm(vm, host)) {
+            if (goodR && allocateHostForVm(vm, host)) { // Try to allocate if no vm in same hundred
                 return true;
             }
         }

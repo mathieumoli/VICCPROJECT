@@ -28,6 +28,17 @@ For this  algorithm, the impact on the cluster hosting capacity is that more hos
 The reason is that the available capacity of a host is no more the only criteria in order to allocate a VM.
 Because of this, some hosts would have the capacity for one more VM, but the affinity criteria is preventing
 that, and another host has to be used.
+We didn't have any problem implementing this algorithm since it was not hard to get the VM's of a host and to
+check if they had an in in the same hundred as the one to allocate (simply used the modulo)
+
+Results for a simulation on all days:
+Incomes:    12398,59€
+Penalties:  200,95€
+Energy:     2688,44€
+Revenue:    9509,21€
+
+We can see that there are more energy fees, which is tending to confirm that more hosts are used. However, there are 
+less penalties because less allocation are tried (since we are more selective before trying an allocation).
 
 ### Fault-tolerance for standalone VMs
 The infrastructure load in that particular context is different from others because we have "real" allocations,
