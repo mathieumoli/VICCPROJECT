@@ -9,6 +9,9 @@ import java.util.*;
 /**
  * @author Nicolas HORY
  * @version 08/02/17.
+ * This scheduler uses the algorithm "worst fit" for the allocations, meaning that it tries to allocate to the host
+ * with the most resources.
+ * Worst-case complexity: O(n²) because we use a map which we browse at most n times.
  */
 public class WorstFitVmAllocationPolicy extends VmAllocationPolicy{
     /** The map to track the server that host each running VM. */

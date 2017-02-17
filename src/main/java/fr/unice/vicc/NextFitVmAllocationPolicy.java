@@ -11,6 +11,9 @@ import java.util.Map;
 /**
  * @author Nicolas HORY
  * @version 08/02/17.
+ * This scheduler uses the NextFit algorithm for the allocations. This means that the research of an appropriate
+ * host starts from the last allocated one and not from the beginning.
+ * Worst-case complexity: O(n) since the worst case is going through all the hosts.
  */
 public class NextFitVmAllocationPolicy extends VmAllocationPolicy {
     /** The map to track the server that host each running VM. */
@@ -36,22 +39,22 @@ public class NextFitVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public boolean allocateHostForVm(Vm vm) {
-        // On parcourt la liste depuis la position de la dernière allocation jusqu'a la fin de la liste
+        //We start from the last allocation index until the end of the list
         for (int i = indexLastAllocation; i < this.getHostList().size(); i++) {
             if (allocateHostForVm(vm, this.getHostList().get(i))) {
-                indexLastAllocation = i; // Mise a jour de l'index
+                indexLastAllocation = i; // Update of the index
                 return true;
             }
         }
-        // Si l'on arrive ici alors on n'a pas trouvé de host pouvant accepter la VM,
-        // donc on reparcourt du début de la liste jusqu'a l'index de la dernière allocation
+        // If we get here then we didn't find an appropriate host to allocate the VM, so we start
+        // from the beginning of the list until the index of last allocation
         for (int i = 0; i < indexLastAllocation; i++) {
             if (allocateHostForVm(vm, this.getHostList().get(i))) {
-                indexLastAllocation = i; // Mise a jour de l'id
+                indexLastAllocation = i; // Update of the index
                 return true;
             }
         }
-        return false;
+        return false; // If we get here then no host in the list is appropriate for the VM
     }
 
     @Override
