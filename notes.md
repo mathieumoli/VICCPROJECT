@@ -8,6 +8,21 @@
 
 ## Comments
 
+### Naive scheduler
+Code: NaiveVmAllocationPolicy.java
+This scheduler is the one with the most simple algorithm. Indeed, we just allocate the vm to the first appropriate
+host. We didn't have any problem implementing this scheduler since it's very basic to go through a list and call
+the method allocateHostForVM on each host of this list until we succeed in allocating.
+
+Results for a simulation on all days:
+Incomes:    12398,59€
+Penalties:  402,16€
+Energy:     2645,63€
+Revenue:    9350,80€
+
+We see that there are a lot of penalties and energy fees, which is mostly due to the fact that we try the 
+allocation on every host until we find one which is appropriate.
+
 ### Anti Affinity algorithm
 For this  algorithm, the impact on the cluster hosting capacity is that more hosts are going to be used. 
 The reason is that the available capacity of a host is no more the only criteria in order to allocate a VM.
@@ -35,19 +50,12 @@ means that we didn't try to allocate a VM to a host with not enough capacity for
 This algorithm has to be the less consumer in energy. Here the result for each previous algorithm:
 
 Energy-efficient: 2604,30€
-
 Fault Tolerance: 2911,59€
-
 Naive: 2645,63€
-
 AntiAffinity: 2688,44€
-
 DisasterRecovery: 2649,07€
-
 nextFit: 2715,76€
-
 worstFit: 2791,80€
-
 noViolation: 2868,74€
 
 ## Greedy scheduler
@@ -57,3 +65,10 @@ To do it, we simply order the node in decreasing order and try to put the VM in 
 smaller one. This algorithm is not very complex (more or less the complexity is n²). It is not the most energy saver 
 (our energy one consumes 2604€ of electricity, the no violation one uses 2868 € & this one 2686€) but its penalties are not enormous too (31,57€ for the greedy and 
 1413€ for the energy one) that's why it is a way to maximize revenue (9680€ for the greedy one, the noViolations one has 9529€ for the revenues and the energy one permits to earn 8380€).
+
+
+## Advice on the project
+This project has been very interesting since we could discover the problems related to allocation of vm's. Moreover,
+being able to see the results and the impact of some criterias on the revenue is also a good point. By implementing
+these algorithms which are different one from another, we can really put in practice what we saw during the lectures.
+In conclusion, we can say that the lecture and the projects interested us.

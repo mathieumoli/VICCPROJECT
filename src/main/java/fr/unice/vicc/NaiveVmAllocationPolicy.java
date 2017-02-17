@@ -10,6 +10,10 @@ import java.util.Map;
 
 /**
  * Created by fhermeni2 on 16/11/2015.
+ * This scheduler simply places each Vm to the first appropriate Host.
+ * Our algorithm simply uses the HostList and tries to allocate on each host. Once one allocation succeeded,
+ * then we return true to indicate it. There are much penalties because of the fails possible in such an algorithm.
+ * Worst-case complexity: O(n). This case is the one in which the allocation fails until the last host
  */
 public class NaiveVmAllocationPolicy extends VmAllocationPolicy {
 
@@ -35,7 +39,7 @@ public class NaiveVmAllocationPolicy extends VmAllocationPolicy {
     @Override
     public boolean allocateHostForVm(Vm vm) {
         /**
-         * Algorithme simple: parcourt la hostlist et essaie d'allouer pour chaque host
+         * Simple algorithm: goes through the hostlist and tries to allocate for each host
          */
         for (Host host : this.getHostList()) {
             if (allocateHostForVm(vm, host)) {
@@ -47,7 +51,6 @@ public class NaiveVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public boolean allocateHostForVm(Vm vm, Host host) {
-
             if (host.vmCreate(vm)) {
                 hoster.put(vm, host);
                 return true;
