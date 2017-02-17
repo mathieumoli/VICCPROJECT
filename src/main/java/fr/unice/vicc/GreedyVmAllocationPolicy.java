@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Nicolas HORY
+ * @author Mathieu MOLINENGO
  * @version 10/02/17.
  * This scheduler's objective is to maximize the revenues. To do so, we chose to sort the hostlist by decreasing
  * order in order to use a minimum of hosts. By doing that, we have a good balance between penalties and energy costs,

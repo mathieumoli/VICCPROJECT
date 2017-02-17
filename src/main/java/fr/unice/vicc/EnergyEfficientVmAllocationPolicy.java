@@ -12,7 +12,7 @@ import java.util.Map;
  * @author Mathieu MOLINENGO
  * @version 10/02/17.
  * This scheduler aims at reducing energy costs. To do that, we chose to sort the hostlist according to mips
- * values of hosts, in decreasing order.
+ * values of hosts, in increasing order.
  * Worst-case complexity: O(n²) because the sort has this complexity, and the allocation is in O(n)
  */
 public class EnergyEfficientVmAllocationPolicy extends VmAllocationPolicy {

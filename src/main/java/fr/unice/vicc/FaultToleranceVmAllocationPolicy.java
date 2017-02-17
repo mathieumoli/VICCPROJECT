@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by mathieumoli on 4/02/2015.
+ * Created by Mathieu MOLINENGO, corrected by Nicolas HORY
+ * @version 04/02/2015.
  * This scheduler objective is to ensure the fault tolerance to 1 node failure for all the VM having an id
  * that is a multiple of 10. This implementation allocates "normally", and then searches for another host
  * which has enough resources for an eventual replicate.
