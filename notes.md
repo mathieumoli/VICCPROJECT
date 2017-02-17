@@ -124,7 +124,8 @@ Code: NoViolationsVmAllocationPolicy.java
 This algorithm is effective because we can see by executing it that there are no reported penalties, which
 means that we didn't try to allocate a VM to a host with not enough capacity for it. To manage that, we used
 the method isSuitable on a host before allocating, which means that the allocation won't be tried if the host
-doesn't have enough free resources, and "solves" the problem of penalties.
+doesn't have enough free resources, and "solves" the problem of penalties. Since the modification is really simple
+compared to other algorithms, we didn't have any problem implementing it.
 
 Results for a simulation on all days:
 * Incomes:    12398,59€
@@ -148,7 +149,10 @@ This algorithm has to be the less consumer in energy. Here are the results for e
 
 We chose to sort the hosts by mips values, in increasing order. By doing that, the allocations will start 
 in hosts with the less Mips, meaning that we are going to minimize the average resource used per host and so the energy fees.
-The result for this algorithm in a simulation on all days is: 
+The main thing to do for this algorithm was the sort, which is an algorithm we already saw during our scolarity
+so we didn't have much problem to implement it.
+
+The results for this algorithm in a simulation on all days are: 
 * Incomes:    12398,59€
 * Penalties:  1413,50€
 * Energy:     2604,30€
@@ -182,4 +186,8 @@ has 9529€ for the revenues and the energy one permits to earn 8380€).
 This project has been very interesting since we could discover the problems related to allocation of vm's. Moreover,
 being able to see the results and the impact of some criterias on the revenue is also a good point. By implementing
 these algorithms which are different one from another, we can really put in practice what we saw during the lectures.
+We didn't have big problems during our implementations since we are used to programming, using maps and lists in Java.
+Since they are the main things we used, the majority of what we did didn't fail and we succeeded in implementing
+our algorithms quite fast, even if some reflection was needed concerning how to achieve the objectives of some algorithms, like
+for the energy efficient one.
 In conclusion, we can say that the lecture and the projects interested us.
